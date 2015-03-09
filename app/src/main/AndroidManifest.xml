@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.tinycoolthings.oauthtest">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.facebook.LoginActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name"/>
+
+        <activity
+            android:name=".results.FacebookActivity"
+            android:theme="@style/FacebookTheme"
+            android:label="@string/facebookActivityName"
+            android:parentActivityName=".MainActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+
+        </activity>
+
+        <activity
+            android:name=".results.GoogleActivity"
+            android:theme="@style/GoogleTheme"
+            android:label="@string/googleActivityName"
+            android:parentActivityName=".MainActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+
+        </activity>
+
+        <activity
+            android:name=".results.TwitterActivity"
+            android:theme="@style/TwitterTheme"
+            android:label="@string/twitterActivityName"
+            android:parentActivityName=".MainActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+
+        </activity>
+
+    </application>
+
+</manifest>

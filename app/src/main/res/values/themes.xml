@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="FacebookTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/facebookPrimaryColor</item>
+        <item name="colorPrimaryDark">@color/facebookPrimaryDarkColor</item>
+        <item name="colorAccent">@color/facebookAccentColor</item>
+    </style>
+
+    <style name="GoogleTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/googlePrimaryColor</item>
+        <item name="colorPrimaryDark">@color/googlePrimaryDarkColor</item>
+        <item name="colorAccent">@color/googleAccentColor</item>
+    </style>
+
+    <style name="TwitterTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/twitterPrimaryColor</item>
+        <item name="colorPrimaryDark">@color/twitterPrimaryDarkColor</item>
+        <item name="colorAccent">@color/twitterAccentColor</item>
+    </style>
+
+</resources>

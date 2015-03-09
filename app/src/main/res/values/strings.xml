@@ -10,4 +10,9 @@
     <string name="googleActivityName">Google+</string>
     <string name="twitterActivityName">Twitter</string>
 
+    <string-array name="facebook_permissions">
+        <item>public_profile</item>
+        <item>email</item>
+    </string-array>
+
 </resources>

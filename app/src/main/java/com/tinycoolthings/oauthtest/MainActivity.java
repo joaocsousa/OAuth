@@ -14,6 +14,8 @@ import com.tinycoolthings.oauthtest.results.FacebookActivity;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
+
 /**
  * Created by joaosousa on 08/03/15.
  */
@@ -30,7 +32,7 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 		setSupportActionBar(toolbar);
 
 		LoginButton authButton = (LoginButton) findViewById(R.id.facebookLoginButton);
-		authButton.setReadPermissions(Arrays.asList("public_profile", "email"));
+		authButton.setReadPermissions(asList(getResources().getStringArray(R.array.facebook_permissions)));
 		mFacebookUiHelper = new UiLifecycleHelper(this, this);
 		mFacebookUiHelper.onCreate(savedInstanceState);
 	}

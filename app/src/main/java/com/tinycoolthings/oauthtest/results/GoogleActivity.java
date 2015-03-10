@@ -38,9 +38,7 @@ public class GoogleActivity extends ActionBarActivity {
 		if (staticData().getGoogleProfile().isPresent()) {
 			Person profile = staticData().getGoogleProfile().get();
 			ImageView profilePictureView = (ImageView) findViewById(R.id.activity_google_picture);
-			Picasso.with(this).load(profile.getImage().getUrl().substring(0,
-				profile.getImage().getUrl().length() - 2)
-				+ 400).into(profilePictureView);
+			Picasso.with(this).load(profile.getImage().getUrl()).into(profilePictureView);
 			TextView informationTextView = (TextView) findViewById(R.id.activity_google_information);
 			StringBuilder infoBuilder = new StringBuilder()
 				.append("ID: ").append(profile.getId()).append("\n\n")

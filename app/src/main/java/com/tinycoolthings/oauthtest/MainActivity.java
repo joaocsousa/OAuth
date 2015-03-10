@@ -5,8 +5,8 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.Session;
@@ -14,12 +14,11 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
-import com.google.android.gms.plus.model.people.Person;
 import com.tinycoolthings.oauthtest.results.FacebookActivity;
 import com.tinycoolthings.oauthtest.results.GoogleActivity;
-import com.tinycoolthings.oauthtest.utils.StaticData;
 
 import static com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -34,6 +33,8 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 
 	/* Request code used to invoke sign in user interactions. */
 	private static final int RC_SIGN_IN = 0;
+
+	private UiLifecycleHelper mFacebookUiHelper;
 
 	/* Client used to interact with Google APIs. */
 	private GoogleApiClient mGoogleApiClient;
@@ -52,8 +53,6 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 	 * resolve them when the user clicks sign-in.
 	 */
 	private ConnectionResult mConnectionResult;
-
-	UiLifecycleHelper mFacebookUiHelper;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +82,21 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 					mSignInClicked = true;
 					resolveSignInError();
 				}
+			}
+		});
+
+		findViewById(R.id.facebookInfoButton).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(MainActivity.this, FacebookActivity.class));
+			}
+		});
+
+
+		findViewById(R.id.googleInfoButton).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(MainActivity.this, GoogleActivity.class));
 			}
 		});
 	}
@@ -146,10 +160,12 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 	@Override
 	public void call(Session session, SessionState state, Exception exception) {
 		if (state.isOpened()) {
-			Log.i(MainActivity.class.getSimpleName(), "Facebook session is open!");
+			Toast.makeText(this, "Facebook session is open!", Toast.LENGTH_SHORT).show();
+			findViewById(R.id.facebookInfoButton).setVisibility(View.VISIBLE);
 			startActivity(new Intent(this, FacebookActivity.class));
 		} else if (state.isClosed()) {
-			Log.i(MainActivity.class.getSimpleName(), "Facebook session is closed!");
+			Toast.makeText(this, "Facebook session is closed!", Toast.LENGTH_SHORT).show();
+			findViewById(R.id.facebookInfoButton).setVisibility(View.GONE);
 		}
 	}
 
@@ -158,8 +174,7 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 		if (mConnectionResult.hasResolution()) {
 			try {
 				mIntentInProgress = true;
-				startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
-					RC_SIGN_IN, null, 0, 0, 0);
+				startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(), RC_SIGN_IN, null, 0, 0, 0);
 			} catch (IntentSender.SendIntentException e) {
 				// The intent was canceled before it was sent.  Return to the default
 				// state and attempt to connect to get an updated ConnectionResult.
@@ -181,6 +196,9 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 				// errors until the user is signed in, or they cancel.
 				resolveSignInError();
 			}
+			Toast.makeText(this, "Google session is closed!", Toast.LENGTH_SHORT).show();
+			findViewById(R.id.googleInfoButton).setVisibility(View.GONE);
+			setGooglePlusButtonText("Sign in");
 		}
 	}
 
@@ -189,16 +207,29 @@ public class MainActivity extends ActionBarActivity implements Session.StatusCal
 		// We've resolved any connection errors.  mGoogleApiClient can be used to
 		// access Google APIs on behalf of the user.
 		mSignInClicked = false;
-		Toast.makeText(this, "User is connected!", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, "Google session is open!", Toast.LENGTH_SHORT).show();
 		if (PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
 			staticData().setGoogleProfile(PeopleApi.getCurrentPerson(mGoogleApiClient));
-			startActivity(new Intent(this, GoogleActivity.class));
+			findViewById(R.id.googleInfoButton).setVisibility(View.VISIBLE);
+			setGooglePlusButtonText("Sign out");
 		}
 	}
 
 	@Override
 	public void onConnectionSuspended(int i) {
 		mGoogleApiClient.connect();
+	}
+
+	protected void setGooglePlusButtonText(String buttonText) {
+		SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+		for (int i = 0; i < signInButton.getChildCount(); i++) {
+			View v = signInButton.getChildAt(i);
+			if (v instanceof TextView) {
+				TextView mTextView = (TextView) v;
+				mTextView.setText(buttonText);
+				return;
+			}
+		}
 	}
 
 }

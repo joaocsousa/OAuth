@@ -24,16 +24,49 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin">
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
 
-        <com.facebook.widget.LoginButton
-            android:id="@+id/facebookLoginButton"
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/sign_in_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/googleInfoButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Info"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"/>
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/activity_vertical_margin">
+
+            <com.facebook.widget.LoginButton
+                android:id="@+id/facebookLoginButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/facebookInfoButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Info"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:visibility="gone"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

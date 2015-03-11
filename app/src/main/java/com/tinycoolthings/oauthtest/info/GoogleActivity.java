@@ -73,13 +73,13 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 		findViewById(R.id.activity_google_login_button).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (!mGoogleApiClient.isConnecting()) {
+				if (mGoogleApiClient.isConnected()) {
+					Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+					mGoogleApiClient.disconnect();
+					mGoogleApiClient.connect();
+				} else if (!mGoogleApiClient.isConnecting()) {
 					mSignInClicked = true;
-					if (mGoogleApiClient.isConnected()) {
-						revokeAccess();
-					} else {
-						resolveSignInError();
-					}
+					resolveSignInError();
 				}
 			}
 		});
@@ -104,10 +104,8 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == REQUEST_CODE_SIGN_IN) {
-			if (resultCode != RESULT_OK) {
-				mSignInClicked = false;
-			}
 			mIntentInProgress = false;
+
 			if (!mGoogleApiClient.isConnecting()) {
 				mGoogleApiClient.connect();
 			}
@@ -120,10 +118,7 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 		// access Google APIs on behalf of the user.
 		mSignInClicked = false;
 		Toast.makeText(this, "Google session is open!", Toast.LENGTH_SHORT).show();
-		if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-			updateSessionInfo(true);
-			setGooglePlusButtonText("Sign out");
-		}
+		updateSessionInfo(true);
 	}
 
 	private void updateSessionInfo(Boolean connected) {
@@ -177,48 +172,21 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 				// errors until the user is signed in, or they cancel.
 				resolveSignInError();
 			}
-			Toast.makeText(this, "Google session is closed!", Toast.LENGTH_SHORT).show();
-			updateSessionInfo(false);
-			setGooglePlusButtonText("Sign in");
 		}
 	}
 
 	/* A helper method to resolve the current ConnectionResult error. */
 	private void resolveSignInError() {
-		if (mConnectionResult != null && mConnectionResult.hasResolution()) {
+		if (mConnectionResult.hasResolution()) {
 			try {
 				mIntentInProgress = true;
-				startIntentSenderForResult(mConnectionResult.getResolution()
-					.getIntentSender(), REQUEST_CODE_SIGN_IN, null, 0, 0, 0);
+				startIntentSenderForResult(mConnectionResult.getResolution().getIntentSender(),
+					REQUEST_CODE_SIGN_IN, null, 0, 0, 0);
 			} catch (IntentSender.SendIntentException e) {
 				// The intent was canceled before it was sent.  Return to the default
 				// state and attempt to connect to get an updated ConnectionResult.
 				mIntentInProgress = false;
 				mGoogleApiClient.connect();
-			}
-		}
-	}
-
-	private void revokeAccess() {
-		Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-		Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
-			.setResultCallback(new ResultCallback<Status>() {
-				@Override
-				public void onResult(Status status) {
-					mGoogleApiClient.connect();
-					updateSessionInfo(false);
-				}
-			});
-	}
-
-	protected void setGooglePlusButtonText(String buttonText) {
-		SignInButton signInButton = (SignInButton) findViewById(R.id.activity_google_login_button);
-		for (int i = 0; i < signInButton.getChildCount(); i++) {
-			View v = signInButton.getChildAt(i);
-			if (v instanceof TextView) {
-				TextView mTextView = (TextView) v;
-				mTextView.setText(buttonText);
-				return;
 			}
 		}
 	}

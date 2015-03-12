@@ -1,4 +1,4 @@
-package com.tinycoolthings.oauthtest.info;
+package com.tinycoolthings.oauthtest.twitter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,18 +7,21 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.common.base.Optional;
+import com.squareup.picasso.Picasso;
 import com.tinycoolthings.oauthtest.R;
+import com.tinycoolthings.oauthtest.twitter.network.CustomTwitterApiClient;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
-
-import io.fabric.sdk.android.Fabric;
+import com.twitter.sdk.android.core.models.User;
 
 /**
  * Created by joaosousa on 08/03/15.
@@ -42,11 +45,6 @@ public class TwitterActivity extends ActionBarActivity {
 				NavUtils.navigateUpFromSameTask(TwitterActivity.this);
 			}
 		});
-
-		TwitterAuthConfig authConfig =
-			new TwitterAuthConfig("consumerKey",
-				"consumerSecret");
-		Fabric.with(this, new Twitter(authConfig));
 
 		mTwitterLoginButton = (TwitterLoginButton) findViewById(R.id.activity_twitter_login_button);
 		mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
@@ -74,6 +72,32 @@ public class TwitterActivity extends ActionBarActivity {
 			TwitterAuthToken authToken = session.getAuthToken();
 			String token = authToken.token;
 			String secret = authToken.secret;
+			findViewById(R.id.activity_twitter_information_container).setVisibility(View.VISIBLE);
+			new CustomTwitterApiClient(session).getUsersService().show(session.getUserId(), session.getUserName(), true, new Callback<User>() {
+				@Override
+				public void success(Result<User> result) {
+					TextView informationTextView = (TextView) findViewById(R.id.activity_twitter_information);
+					Optional<User> candidateUser = Optional.fromNullable(result.data);
+					if (candidateUser.isPresent()) {
+						User user = candidateUser.get();
+						Picasso.with(TwitterActivity.this).load(user.profileImageUrlHttps)
+							.into((ImageView) findViewById(R.id.activity_twitter_picture));
+						StringBuilder infoBuilder = new StringBuilder()
+							.append("Email: ").append(user.email).append("\n")
+							.append("Name: ").append(user.name).append("\n")
+							.append("ScreenName: ").append(user.screenName);
+						informationTextView.setText(
+							infoBuilder.toString()
+						);
+					}
+				}
+
+				@Override
+				public void failure(TwitterException e) {
+
+				}
+			});
+
 		}
 	}
 

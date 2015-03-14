@@ -10,9 +10,9 @@ import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.common.base.Optional;
-import com.tinycoolthings.oauthtest.info.FacebookActivity;
-import com.tinycoolthings.oauthtest.info.GoogleActivity;
-import com.tinycoolthings.oauthtest.twitter.TwitterActivity;
+import com.tinycoolthings.oauthtest.info.facebook.FacebookActivity;
+import com.tinycoolthings.oauthtest.info.google.GoogleActivity;
+import com.tinycoolthings.oauthtest.info.twitter.TwitterActivity;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import io.fabric.sdk.android.Fabric;

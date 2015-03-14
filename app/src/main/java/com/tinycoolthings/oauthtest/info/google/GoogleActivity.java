@@ -1,4 +1,4 @@
-package com.tinycoolthings.oauthtest.info;
+package com.tinycoolthings.oauthtest.info.google;
 
 import android.content.Intent;
 import android.content.IntentSender;
@@ -12,10 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 import com.google.common.base.Joiner;
@@ -129,8 +126,9 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 		if (connected && candidatePerson.isPresent()) {
 			Person person = candidatePerson.get();
 			findViewById(R.id.activity_google_information_container).setVisibility(View.VISIBLE);
+			findViewById(R.id.activity_google_login_button).setVisibility(View.GONE);
 			ImageView profilePictureView = (ImageView) findViewById(R.id.activity_google_picture);
-			Picasso.with(this).load(person.getImage().getUrl()).into(profilePictureView);
+			Picasso.with(this).load(person.getImage().getUrl().replace("sz=50", "sz=500")).into(profilePictureView);
 			TextView informationTextView = (TextView) findViewById(R.id.activity_google_information);
 			StringBuilder infoBuilder = new StringBuilder()
 				.append("ID: ").append(person.getId()).append("\n\n")
@@ -152,6 +150,7 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 			informationTextView.setText(infoBuilder.toString());
 		} else {
 			findViewById(R.id.activity_google_information_container).setVisibility(View.GONE);
+			findViewById(R.id.activity_google_login_button).setVisibility(View.VISIBLE);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.tinycoolthings.oauthtest.info;
+package com.tinycoolthings.oauthtest.info.facebook;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -102,6 +102,7 @@ public class FacebookActivity extends ActionBarActivity implements Session.Statu
 	private void updateSessionInfo(Session session) {
 		if (session != null && session.isOpened()) {
 			findViewById(R.id.activity_facebook_information_container).setVisibility(View.VISIBLE);
+			findViewById(R.id.activity_facebook_login_button).setVisibility(View.GONE);
 			Request.newMeRequest(session, new Request.GraphUserCallback() {
 				@Override
 				public void onCompleted(GraphUser user, Response response) {
@@ -126,6 +127,7 @@ public class FacebookActivity extends ActionBarActivity implements Session.Statu
 			}).executeAsync();
 		} else {
 			findViewById(R.id.activity_facebook_information_container).setVisibility(View.GONE);
+			findViewById(R.id.activity_facebook_login_button).setVisibility(View.VISIBLE);
 		}
 	}
 

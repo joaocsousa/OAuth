@@ -1,4 +1,4 @@
-package com.tinycoolthings.oauthtest.twitter.network;
+package com.tinycoolthings.oauthtest.info.twitter.network;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.models.User;

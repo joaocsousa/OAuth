@@ -1,4 +1,4 @@
-package com.tinycoolthings.oauthtest.twitter;
+package com.tinycoolthings.oauthtest.info.twitter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,11 +9,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 import com.tinycoolthings.oauthtest.R;
-import com.tinycoolthings.oauthtest.twitter.network.CustomTwitterApiClient;
+import com.tinycoolthings.oauthtest.info.twitter.network.CustomTwitterApiClient;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -63,16 +64,25 @@ public class TwitterActivity extends ActionBarActivity {
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+		updateSessionInfo(Twitter.getSessionManager().getActiveSession());
+	}
+
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		// Pass the activity result to the login button.
 		mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == Activity.RESULT_OK) {
-			TwitterSession session = Twitter.getSessionManager().getActiveSession();
-			TwitterAuthToken authToken = session.getAuthToken();
-			String token = authToken.token;
-			String secret = authToken.secret;
+			updateSessionInfo(Twitter.getSessionManager().getActiveSession());
+		}
+	}
+
+	private void updateSessionInfo(TwitterSession session) {
+		if (session != null) {
 			findViewById(R.id.activity_twitter_information_container).setVisibility(View.VISIBLE);
+			mTwitterLoginButton.setVisibility(View.GONE);
 			new CustomTwitterApiClient(session).getUsersService().show(session.getUserId(), session.getUserName(), true, new Callback<User>() {
 				@Override
 				public void success(Result<User> result) {
@@ -80,27 +90,26 @@ public class TwitterActivity extends ActionBarActivity {
 					Optional<User> candidateUser = Optional.fromNullable(result.data);
 					if (candidateUser.isPresent()) {
 						User user = candidateUser.get();
-						Picasso.with(TwitterActivity.this).load(user.profileImageUrlHttps)
+						Picasso.with(TwitterActivity.this).load(user.profileImageUrlHttps.replace("_normal", ""))
 							.into((ImageView) findViewById(R.id.activity_twitter_picture));
-						StringBuilder infoBuilder = new StringBuilder()
-							.append("Email: ").append(user.email).append("\n")
-							.append("Name: ").append(user.name).append("\n")
-							.append("ScreenName: ").append(user.screenName);
 						informationTextView.setText(
-							infoBuilder.toString()
+							new StringBuilder()
+								.append("Email: ").append(user.email).append("\n")
+								.append("Name: ").append(user.name).append("\n")
+								.append("ScreenName: ").append(user.screenName).toString()
 						);
 					}
 				}
 
 				@Override
 				public void failure(TwitterException e) {
-
+					Toast.makeText(TwitterActivity.this, "Failed to fetch user info", Toast.LENGTH_SHORT).show();
 				}
 			});
-
+		} else {
+			findViewById(R.id.activity_twitter_information_container).setVisibility(View.GONE);
+			mTwitterLoginButton.setVisibility(View.VISIBLE);
 		}
 	}
-
-
 
 }

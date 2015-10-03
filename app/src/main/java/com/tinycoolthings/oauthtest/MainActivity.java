@@ -5,22 +5,23 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.common.base.Optional;
 import com.tinycoolthings.oauthtest.info.facebook.FacebookActivity;
 import com.tinycoolthings.oauthtest.info.google.GoogleActivity;
 import com.tinycoolthings.oauthtest.info.twitter.TwitterActivity;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+
 import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by joaosousa on 08/03/15.
  */
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,19 +53,19 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 
-		Optional<String> candidateTwitterApiKey = Optional.absent();
-		Optional<String> candidateTwitterApiSecret = Optional.absent();
+		String twitterApiKey = null;
+		String twitterApiSecret = null;
 
 		try {
 			ApplicationInfo applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-			candidateTwitterApiKey = Optional.fromNullable((String) applicationInfo.metaData.get("twitterApiKey"));
-			candidateTwitterApiSecret = Optional.fromNullable((String) applicationInfo.metaData.get("twitterApiSecret"));
+			twitterApiKey = (String) applicationInfo.metaData.get("twitterApiKey");
+			twitterApiSecret = (String) applicationInfo.metaData.get("twitterApiSecret");
 		} catch (PackageManager.NameNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		if (candidateTwitterApiKey.isPresent() && candidateTwitterApiSecret.isPresent()) {
-			TwitterAuthConfig authConfig = new TwitterAuthConfig(candidateTwitterApiKey.get(), candidateTwitterApiSecret.get());
+		if (twitterApiKey != null && twitterApiSecret != null) {
+			TwitterAuthConfig authConfig = new TwitterAuthConfig(twitterApiKey, twitterApiSecret);
 			Fabric.with(this, new Crashlytics(), new Twitter(authConfig));
 		}
 

@@ -5,20 +5,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 import com.tinycoolthings.oauthtest.R;
 import com.tinycoolthings.oauthtest.info.twitter.network.CustomTwitterApiClient;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -27,7 +26,7 @@ import com.twitter.sdk.android.core.models.User;
 /**
  * Created by joaosousa on 08/03/15.
  */
-public class TwitterActivity extends ActionBarActivity {
+public class TwitterActivity extends AppCompatActivity {
 
 	private TwitterLoginButton mTwitterLoginButton;
 
@@ -64,12 +63,6 @@ public class TwitterActivity extends ActionBarActivity {
 	}
 
 	@Override
-	protected void onResume() {
-		super.onResume();
-		updateSessionInfo(Twitter.getSessionManager().getActiveSession());
-	}
-
-	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		// Pass the activity result to the login button.
@@ -77,6 +70,12 @@ public class TwitterActivity extends ActionBarActivity {
 		if (resultCode == Activity.RESULT_OK) {
 			updateSessionInfo(Twitter.getSessionManager().getActiveSession());
 		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		updateSessionInfo(Twitter.getSessionManager().getActiveSession());
 	}
 
 	private void updateSessionInfo(TwitterSession session) {
@@ -87,9 +86,8 @@ public class TwitterActivity extends ActionBarActivity {
 				@Override
 				public void success(Result<User> result) {
 					TextView informationTextView = (TextView) findViewById(R.id.activity_twitter_information);
-					Optional<User> candidateUser = Optional.fromNullable(result.data);
-					if (candidateUser.isPresent()) {
-						User user = candidateUser.get();
+					User user = result.data;
+					if (user != null) {
 						Picasso.with(TwitterActivity.this).load(user.profileImageUrlHttps.replace("_normal", ""))
 							.into((ImageView) findViewById(R.id.activity_twitter_picture));
 						informationTextView.setText(

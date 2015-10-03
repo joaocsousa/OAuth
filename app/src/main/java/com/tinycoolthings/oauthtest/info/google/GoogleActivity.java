@@ -5,7 +5,9 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,8 +17,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 import com.tinycoolthings.oauthtest.R;
 
@@ -26,7 +26,7 @@ import static com.google.android.gms.common.api.GoogleApiClient.OnConnectionFail
 /**
  * Created by joaosousa on 08/03/15.
  */
-public class GoogleActivity extends ActionBarActivity implements ConnectionCallbacks, OnConnectionFailedListener {
+public class GoogleActivity extends AppCompatActivity implements ConnectionCallbacks, OnConnectionFailedListener {
 
 	// Request code to sign in
 	private static final int REQUEST_CODE_SIGN_IN = 1001;
@@ -84,12 +84,6 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 	}
 
 	@Override
-	protected void onStart() {
-		super.onStart();
-		mGoogleApiClient.connect();
-	}
-
-	@Override
 	public void onStop() {
 		super.onStop();
 		if (mGoogleApiClient.isConnected()) {
@@ -110,6 +104,12 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+		mGoogleApiClient.connect();
+	}
+
+	@Override
 	public void onConnected(Bundle bundle) {
 		// We've resolved any connection errors.  mGoogleApiClient can be used to
 		// access Google APIs on behalf of the user.
@@ -118,13 +118,17 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 		updateSessionInfo(true);
 	}
 
+	@Override
+	public void onConnectionSuspended(int i) {
+		mGoogleApiClient.connect();
+	}
+
 	private void updateSessionInfo(Boolean connected) {
-		Optional<Person> candidatePerson = Optional.absent();
+		Person person = null;
 		if (connected) {
-			candidatePerson = Optional.fromNullable(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient));
+			person = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
 		}
-		if (connected && candidatePerson.isPresent()) {
-			Person person = candidatePerson.get();
+		if (connected && person != null) {
 			findViewById(R.id.activity_google_information_container).setVisibility(View.VISIBLE);
 			findViewById(R.id.activity_google_login_button).setVisibility(View.GONE);
 			ImageView profilePictureView = (ImageView) findViewById(R.id.activity_google_picture);
@@ -134,17 +138,19 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 				.append("ID: ").append(person.getId()).append("\n\n")
 				.append("Nickname: ").append(person.getNickname()).append("\n\n")
 				.append("Name: ").append(
-					Joiner.on(" ").skipNulls().join(
-						person.getName().getGivenName(),
-						person.getName().getMiddleName(),
-						person.getName().getFamilyName())
+					TextUtils.join(" ",
+						new String[]{
+							person.getName().getGivenName(),
+							person.getName().getMiddleName(),
+							person.getName().getFamilyName()})
 				).append("\n\n")
 				.append("DisplayName: ").append(person.getDisplayName()).append("\n\n")
 				.append("Birthday: ").append(person.getBirthday()).append("\n\n")
 				.append("Age: ").append(
-					Joiner.on(" ").skipNulls().join(
-						person.getAgeRange().getMin(),
-						person.getAgeRange().getMax())
+					TextUtils.join(" ",
+						new String[]{
+							String.valueOf(person.getAgeRange().getMin()),
+							String.valueOf(person.getAgeRange().getMax())})
 				).append("\n\n")
 				.append("Location: ").append(person.getCurrentLocation());
 			informationTextView.setText(infoBuilder.toString());
@@ -152,11 +158,6 @@ public class GoogleActivity extends ActionBarActivity implements ConnectionCallb
 			findViewById(R.id.activity_google_information_container).setVisibility(View.GONE);
 			findViewById(R.id.activity_google_login_button).setVisibility(View.VISIBLE);
 		}
-	}
-
-	@Override
-	public void onConnectionSuspended(int i) {
-		mGoogleApiClient.connect();
 	}
 
 	@Override

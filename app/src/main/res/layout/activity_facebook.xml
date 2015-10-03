@@ -38,7 +38,7 @@
                 android:orientation="vertical"
                 android:gravity="center">
 
-                <com.facebook.widget.ProfilePictureView
+                <com.facebook.login.widget.ProfilePictureView
                     android:id="@+id/activity_facebook_profile_picture"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"/>
@@ -53,12 +53,12 @@
 
             </LinearLayout>
 
-            <com.facebook.widget.LoginButton
+            <com.facebook.login.widget.LoginButton
                 android:id="@+id/activity_facebook_login_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal" />
 
         </LinearLayout>
 

@@ -16,6 +16,7 @@
 #   public *;
 #}
 
+# retrofit
 -dontwarn com.squareup.okhttp.**
 -dontwarn com.google.appengine.api.urlfetch.**
 -dontwarn rx.**
@@ -27,4 +28,10 @@
 -keep class retrofit.** { *; }
 -keepclasseswithmembers class * {
     @retrofit.http.* ;
+}
+# glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+    **[] $VALUES;
+    public *;
 }
